@@ -1,0 +1,15 @@
+inserir campo formaçao em membro
+credencial --  campo célula não tem mais de ser not null -- 
+		credenciais globais
+melhor -- crie uma tabela com rel binário
+
+Nesse sentido, você usará:
+
+- Para o BD:
+  - PostgreSQL
+- Para o back:
+  - Psycopg2
+  - Flask-RESTPlus
+- Para o front:
+  - Axios
+  - Vue
