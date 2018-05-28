@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="postgres@localhost" uuid="0e256f55-6e81-446f-bf10-9135fd11d50a">
+      <database-info product="PostgreSQL" version="9.5.12" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.2">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>andre</user-name>
+      <introspection-schemas>postgres:public</introspection-schemas>
+    </data-source>
+  </component>
+</project>
