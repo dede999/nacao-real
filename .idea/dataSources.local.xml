@@ -8,7 +8,7 @@
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
       <user-name>andre</user-name>
-      <introspection-schemas>postgres:public</introspection-schemas>
+      <introspection-schemas>postgres:nacao_real,public</introspection-schemas>
     </data-source>
   </component>
 </project>
