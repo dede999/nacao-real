@@ -6,6 +6,7 @@
 % Preamble
 \documentclass[11pt]{article}
 \usepackage{basic}
+\newcommand{\codigo}[3]{\lstinputlisting[firstline=#1,lastline=#2, caption=Entidade #3]{../scripts/DDL.sql}}
 
 \title{Descrição do sistema Nação Real}
 \date{\today}
@@ -15,6 +16,7 @@
     \maketitle
     \tableofcontents
     \listoffigures
+    \lstlistoflistings
     \newpage
 
     \section{Introdução}
@@ -22,6 +24,11 @@
 
     Esse sistema destina-se à melhor articulação intra e inter células. Buscamos criar um sistema de comunicação para
     que as ações estejam melhor coordenadas.
+
+    A ideia é que seja um sistema que funcione bem na tela de computador, mas que também seja bem utilizável em celulares.
+    Esse documento tem como principal motivação documentar da melhor forma possível o sistema. Da instalação do sistema até
+    o estágio final de produção e lançamento.
+
 
     \section[DER]{Diagrama Entidade-Relacionamento}
     \label{DER}
@@ -60,29 +67,16 @@
 
     \section[Descrição]{Entidades e relacionamentos}
 
+        Pra essa sessão, é necessário ter ciência dessa legenda
+        \legenda
+
         \subsection{Membros}
-            \begin{lstlisting}
-                CREATE TABLE IF NOT EXISTS nacao_real.membro (
-                    mID             SERIAL      NOT NULL,
-                    mCPF            BIGINT      NOT NULL  UNIQUE,
-                    mNome           VARCHAR(30) NOT NULL,
-                    mSnome          VARCHAR(30) NOT NULL,
-                    mEndereco       VARCHAR(90) NOT NULL,
-                    mCodPostal      VARCHAR(9)  NOT NULL,
-                    mCidade         VARCHAR(45) NOT NULL,
-                    mEstado         VARCHAR(2)  NOT NULL,
-                    mPais           VARCHAR(45) NOT NULL,
-                    mESpecialidade  VARCHAR(45) NOT NULL,
-                    mNasc           TIMESTAMP   NOT NULL,
-                    mPassword       VARCHAR(90) NOT NULL
-                    PRIMARY KEY (mID)
-                );
-            \end{lstlisting}
+            \codigo{3}{17}{Membros}
 
             Trata-se da entidade principal do BD. Abaixo estão seus atributos e informações
             relevantes:
             \begin{itemize}
-                \item \cp \atr{mID} -- inteiro -- identificador serial de tuplas
+                \item \pk -- \atr{mID} -- inteiro -- identificador serial de tuplas
                 \item \atr{mCPF} -- inteiro grande -- escolhido para representar o CPF
                 de uma pessoa. Ainda que o CPF possa ser melhor representado por uma string,
                 acredito que a indexação seja mais otimizada se processsada com inteiros.
@@ -109,16 +103,82 @@
                 célula e os administradores.
                 \item \atualizar Somente o próprio usuário
                 \item \deletar O próprio usuário ou o administrador.
+                \item Reflexão: será que é válido atribuir um campo disciplinar visível apenas por
+                admins
             \end{itemize}
 
         \subsection{Habilidades}
 
             Tabela representa o múltiplos valores que o campo habilidades e conhecimento podem ter
+            \codigo{19}{28}{Habilidades}
+            \begin{itemize}
+                \item \key  \fk -- \atr{TitularID} -- cahave estrangeira para a entidade Membro
+                \item \key -- \atr{habilidade} -- string -- indica a habilidade do membro
+                \item \criar O próprio usuário ou o admin
+                \item \atualizar Idem
+                \item \ler Qualquer usuário.
+                \item \deletar Ele mesmo ou o admin
+            \end{itemize}
 
+        \subsection{Telefones}
+
+            Tabela reponsável por armazenar os contatos dos membros
+            \codigo{30}{42}{Telefones}
+            \begin{itemize}
+                \item \key -- \atr{CodInternacional} -- inteiro -- Todo o código internacional
+                é representado por 1 a 3 dígitos
+                \item \key -- \atr{Ntelefone} -- string -- Como não possível saber de todos os
+                formatos de números de telefone que poderão ser inseridos, acreditei ser adequado.
+                Criar um campo do tipo inteiro limitaria a quantidade de dígitos podendo corromper
+                os dados
+                \item \key  \fk -- \atr{TitularID} -- cahave estrangeira para a entidade Membro
+                \item \atr{Pessoal} -- booleano -- campo destinado a indicar se o número
+                indicado é de uso profissional ou pessoal
+                \item \atr{WhatsApp} -- booleano -- indica se um perfil de WhatsApp está associado
+                à esse número
+            \end{itemize}
+
+        \subsection{Email}
+
+            Semelhante à tabela anterior, armazena formas de contato
+            \codigo{44}{53}{Email}
+            \begin{itemize}
+                \item \key \fk -- \atr{TitularID} -- cahave estrangeira para a entidade Membro
+                \item \key -- \atr{Email} -- string -- indica o número a ser cadastrado
+            \end{itemize}
+
+        \subsection{Célula}
+
+            Tabela responável por armazenar os dados das células.
+            \codigo{55}{66}{Célula}
+            \begin{itemize}
+                \item \pk -- \atr{idcelula} --  chave primária -- número serial
+                \item \atr{celula\_tipo} -- inteiro --  representa o alcance da célula. O valor
+                desse campo é um inteiro que representa um raio de alcance \begin{enumerate}
+                    \item Internacional
+                    \item Nacional
+                    \item Regional
+                    \item Estadual
+                    \item Sub-estadual
+                    \item Municipal
+                    \item Bairro
+                \end{enumerate}
+                \item \atr{nucleo} -- inteiro -- funciona de uma forma análoga com o campo anterior,
+                mas diferentemente do anterior, este campo representa a especialização da célula, ou
+                seja, se é uma célula estratégica, organizacional, suporte ...
+                \item \fk -- \atr{celula\_pai} -- a ideia de nosso sistema, é que as células possam
+                ser criadas natualmemte. Uma célula pode surgir instantâneamente ou a partir de
+                alguma outra. Neste caso, a célula tem uma célula-pai
+            \end{itemize}
+
+        \subsection{Operações}
+        \subsection{Operações}
         \subsection{Células}
         \subsection{Mensagens}
         \subsection{Atividades}
         \subsection{Operações}
+        \subsection{Operações}
+
 
     \section[Equipe]{Membros da equipe}
 

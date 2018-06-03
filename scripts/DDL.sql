@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS nacao_real.membro (
 );
 
 CREATE TABLE IF NOT EXISTS nacao_real.habilidades (
-  membro  INT NOT NULL,
-  habilidade VARCHAR(45),
+  membro      INT         NOT NULL,
+  habilidade  VARCHAR(45) NOT NULL,
   PRIMARY KEY (membro, habilidade),
   CONSTRAINT membro
     FOREIGN KEY (membro)
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS nacao_real.habilidades (
 
 CREATE TABLE IF NOT EXISTS nacao_real.telefones (
   CodInternacional  INT         NOT NULL DEFAULT 55,
-  Ntelefone         VARCHAR(20) NOT NULL,
+  Ntelefone         VARCHAR(25) NOT NULL,
   TitularID         INT         NOT NULL,
-  TipoContato       VARCHAR(45) NOT NULL,
+  Pessoal           BOOLEAN     NOT NULL,
   WhatsApp          BOOLEAN     NOT NULL DEFAULT TRUE,
   PRIMARY KEY (TitularID, CodInternacional, Ntelefone),
   CONSTRAINT TituarID
@@ -42,10 +42,10 @@ CREATE TABLE IF NOT EXISTS nacao_real.telefones (
 );
 
 CREATE TABLE IF NOT EXISTS nacao_real.email (
-  Email       INT NOT NULL,
-  TitularID  INT NOT NULL,
+  Email       VARCHAR(40) NOT NULL,
+  TitularID   INT         NOT NULL,
   PRIMARY KEY (Email, TitularID),
-  CONSTRAINT TitulaCPF
+  CONSTRAINT TitularCPF
     FOREIGN KEY (TitularID)
     REFERENCES nacao_real.membro (mID)
     ON DELETE CASCADE
@@ -54,10 +54,8 @@ CREATE TABLE IF NOT EXISTS nacao_real.email (
 
 CREATE TABLE IF NOT EXISTS nacao_real.celula (
   idcelula    SERIAL  NOT NULL,
-  celula_tipo INT     NOT NULL,
-  -- pode ser internacional, nacional, estadual, municipal ou de bairro (combinar código)
+  alcance     INT     NOT NULL,
   nucleo      INT     NOT NULL,
-  -- pode ser estratégico, organização, suporte, etc ... (combinar código)
   celula_pai  INT,
   PRIMARY KEY (idcelula),
   CONSTRAINT celula_pai
@@ -66,6 +64,8 @@ CREATE TABLE IF NOT EXISTS nacao_real.celula (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
+-- celula_tipo -- pode ser internacional, nacional, estadual, municipal ou de bairro (combinar código)
+-- nucleo -- pode ser estratégico, organização, suporte, etc ... (combinar código)
 
 CREATE TABLE IF NOT EXISTS nacao_real.inscricao (
   participante  INT NOT NULL,
