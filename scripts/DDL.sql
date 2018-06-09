@@ -10,15 +10,15 @@ CREATE TABLE IF NOT EXISTS nacao_real.membro (
   mCidade         VARCHAR(45) NOT NULL,
   mEstado         VARCHAR(2)  NOT NULL,
   mPais           VARCHAR(45) NOT NULL,
-  mESpecialidade  VARCHAR(45) NOT NULL,
   mNasc           TIMESTAMP   NOT NULL,
   mPassword       VARCHAR(90) NOT NULL,
   PRIMARY KEY (mID)
 );
 
 CREATE TABLE IF NOT EXISTS nacao_real.habilidades (
-  membro      INT         NOT NULL,
-  habilidade  VARCHAR(45) NOT NULL,
+  membro        INT         NOT NULL,
+  habilidade    VARCHAR(45) NOT NULL,
+  especialidade BOOLEAN     NOT NULL DEFAULT FALSE,
   PRIMARY KEY (membro, habilidade),
   CONSTRAINT membro
     FOREIGN KEY (membro)
