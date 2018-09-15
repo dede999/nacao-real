@@ -1,18 +1,41 @@
 CREATE SCHEMA IF NOT EXISTS nacao_real;
 
+CREATE TABLE IF NOT EXISTS nacao_real.users(
+  uNumber     SERIAL        NOT NULL,
+  uDesc       VARCHAR(20)   NOT NULL,
+  PRIMARY KEY (uNumber)
+);
+
+CREATE TABLE IF NOT EXISTS nacao_real.perfil(
+  pID             SERIAL      NOT NULL,
+  pCPF            BIGINT      NOT NULL,
+  ppassword       VARCHAR(90) NOT NULL,
+  pType           INT         NOT NULL,
+  PRIMARY KEY (pID),
+  CONSTRAINT pType
+    FOREIGN KEY (pType)
+    REFERENCES nacao_real.users(uNumber)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS nacao_real.membro (
-  mCPF            BIGINT      NOT NULL,
   mID             SERIAL      NOT NULL  UNIQUE,
+  mperfil         INT         NOT NULL,
   mNome           VARCHAR(30) NOT NULL,
-  mSnome          VARCHAR(30) NOT NULL,
+  msnome          VARCHAR(30) NOT NULL,
   mEndereco       VARCHAR(90) NOT NULL,
   mCodPostal      VARCHAR(45) NOT NULL,
   mCidade         VARCHAR(45) NOT NULL,
   mEstado         VARCHAR(2)  NOT NULL,
   mPais           VARCHAR(45) NOT NULL,
   mNasc           TIMESTAMP   NOT NULL,
-  mPassword       VARCHAR(90) NOT NULL,
-  PRIMARY KEY (mID)
+  PRIMARY KEY (mID),
+  CONSTRAINT mperfil
+    FOREIGN KEY (mperfil)
+    REFERENCES nacao_real.perfil (pID)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS nacao_real.habilidades (
@@ -27,11 +50,23 @@ CREATE TABLE IF NOT EXISTS nacao_real.habilidades (
     ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS nacao_real.idiomas(
+  membro        INT         NOT NULL,
+  idioma        VARCHAR(45) NOT NULL,
+  fluencia      INT         NOT NULL,
+  PRIMARY KEY (membro, idioma),
+  CONSTRAINT membro
+  FOREIGN KEY (membro)
+    REFERENCES nacao_real.membro (mID)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS nacao_real.telefones (
   CodInternacional  INT         NOT NULL DEFAULT 55,
   Ntelefone         VARCHAR(25) NOT NULL,
   TitularID         INT         NOT NULL,
-  Pessoal           BOOLEAN     NOT NULL,
+  Pessoal           BOOLEAN     NOT NULL DEFAULT TRUE,
   WhatsApp          BOOLEAN     NOT NULL DEFAULT TRUE,
   PRIMARY KEY (TitularID, CodInternacional, Ntelefone),
   CONSTRAINT TituarID
@@ -53,9 +88,10 @@ CREATE TABLE IF NOT EXISTS nacao_real.email (
 );
 
 CREATE TABLE IF NOT EXISTS nacao_real.celula (
-  idcelula    SERIAL  NOT NULL,
-  alcance     INT     NOT NULL,
-  nucleo      INT     NOT NULL,
+  idcelula    SERIAL      NOT NULL,
+  regiao      VARCHAR(20) NOT NULL,
+  alcance     INT         NOT NULL,
+  nucleo      INT         NOT NULL,
   celula_pai  INT,
   PRIMARY KEY (idcelula),
   CONSTRAINT celula_pai
@@ -64,12 +100,13 @@ CREATE TABLE IF NOT EXISTS nacao_real.celula (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
--- celula_tipo -- pode ser internacional, nacional, estadual, municipal ou de bairro (combinar código)
+-- alcance -- pode ser internacional, nacional, estadual, municipal ou de bairro (combinar código)
 -- nucleo -- pode ser estratégico, organização, suporte, etc ... (combinar código)
 
 CREATE TABLE IF NOT EXISTS nacao_real.inscricao (
-  participante  INT NOT NULL,
-  celula        INT NOT NULL,
+  participante  INT     NOT NULL,
+  celula        INT     NOT NULL,
+  criador       BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (participante, celula),
   CONSTRAINT participante
     FOREIGN KEY (participante)
@@ -89,34 +126,34 @@ CREATE TABLE IF NOT EXISTS nacao_real.operacoes (
   PRIMARY KEY (idoperacoes)
 );
 
-CREATE TABLE IF NOT EXISTS nacao_real.credenciais (
-  membro    INT NOT NULL,
-  celula    INT NOT NULL,
-  operacao  INT NOT NULL,
-  PRIMARY KEY (membro, celula, operacao),
-  CONSTRAINT membro
-    FOREIGN KEY (membro)
-    REFERENCES nacao_real.membro (mID)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT celula
-    FOREIGN KEY (celula)
-    REFERENCES nacao_real.celula (idcelula)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT operacao
-    FOREIGN KEY (operacao)
-    REFERENCES nacao_real.operacoes (idoperacoes)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
+-- CREATE TABLE IF NOT EXISTS nacao_real.credenciais (
+--   membro    INT NOT NULL,
+--   celula    INT NOT NULL,
+--   operacao  INT NOT NULL,
+--   PRIMARY KEY (membro, celula, operacao),
+--   CONSTRAINT membro
+--     FOREIGN KEY (membro)
+--     REFERENCES nacao_real.membro (mID)
+--     ON DELETE CASCADE
+--     ON UPDATE CASCADE,
+--   CONSTRAINT celula
+--     FOREIGN KEY (celula)
+--     REFERENCES nacao_real.celula (idcelula)
+--     ON DELETE CASCADE
+--     ON UPDATE CASCADE,
+--   CONSTRAINT operacao
+--     FOREIGN KEY (operacao)
+--     REFERENCES nacao_real.operacoes (idoperacoes)
+--     ON DELETE CASCADE
+--     ON UPDATE CASCADE
+-- );
 
 CREATE TABLE IF NOT EXISTS nacao_real.atividades (
-  atividadeID     SERIAL  NOT NULL,
+  atividadeID     SERIAL      NOT NULL,
   atv_titulo      VARCHAR(90) NOT NULL,
-  atv_local       VARCHAR(90) NULL,
-  momento         TIMESTAMP NULL,
-  descricao       TEXT NULL,
+  atv_local       VARCHAR(90) NOT NULL,
+  momento         TIMESTAMP   NOT NULL,
+  descricao       TEXT        NOT NULL,
   PRIMARY KEY (atividadeID)
 );
 
@@ -136,27 +173,27 @@ CREATE TABLE IF NOT EXISTS nacao_real.responsaveis (
     ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS nacao_real.super_credenciais (
-  membro INT NOT NULL,
-  operacao INT NOT NULL,
-  PRIMARY KEY (membro, operacao),
-  CONSTRAINT membro
-    FOREIGN KEY (membro)
-    REFERENCES nacao_real.membro (mID)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT operacao
-    FOREIGN KEY (operacao)
-    REFERENCES nacao_real.operacoes (idoperacoes)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
+-- CREATE TABLE IF NOT EXISTS nacao_real.super_credenciais (
+--   membro INT NOT NULL,
+--   operacao INT NOT NULL,
+--   PRIMARY KEY (membro, operacao),
+--   CONSTRAINT membro
+--     FOREIGN KEY (membro)
+--     REFERENCES nacao_real.membro (mID)
+--     ON DELETE CASCADE
+--     ON UPDATE CASCADE,
+--   CONSTRAINT operacao
+--     FOREIGN KEY (operacao)
+--     REFERENCES nacao_real.operacoes (idoperacoes)
+--     ON DELETE CASCADE
+--     ON UPDATE CASCADE
+-- );
 
 CREATE TABLE IF NOT EXISTS nacao_real.message (
-  id_message  SERIAL NOT NULL,
-  autor       INT NOT NULL,
-  celula      INT NULL,
-  mensagem    TEXT NOT NULL,
+  id_message  SERIAL    NOT NULL,
+  autor       INT       NOT NULL,
+  celula      INT       NOT NULL,
+  mensagem    TEXT      NOT NULL,
   PRIMARY KEY (id_message),
   CONSTRAINT autor
     FOREIGN KEY (autor)
